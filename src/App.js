@@ -6,27 +6,78 @@ import CardList from "./CardList";
 
 import SearchBox from './SearchBox'
 
+import {setSearchField} from "./actions";
+
+import {connect} from 'react-redux';
+
+const mapStateToProps = state => {
+    console.log('mapStateToProps')
+
+    return {
+        searchField: state.searchField
+    }
+
+}
+
+
+const mapDispatchToProps = (dispatch) => {
+
+    console.log('mapDispatchToPropsx')
+    return {
+
+
+        onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+    }
+}
+
 
 class App extends Component {
 
     constructor() {
         super()
         this.state = {
-            robots: robots,
-            searchfield: '',
+            robots: [],
+
         }
     }
 
+    componentDidMount() {
+        fetch('https://jsonplaceholder.typicode.com/users').then(response => response.json()).then(users => {
+            this.setState({robots: users})
+        });
+    }
 
-    onSearchChange = (event) => {
-        console.log(event.target.value)
-        this.setState({searchfield: event.target.value})
-        const a = this.state.robots
 
-        console.log(a)
 
-        const ans = robots.filter(l => {
-            return l.name.toLowerCase().match(event.target.value.toString());
+
+    render() {
+
+
+        const a = this.state.robots;
+
+        console.log(this.state);
+
+        console.log("bla");
+        console.log(a);
+
+
+        const {searchField, onSearchChange} = this.props;
+
+        console.log('props down baby')
+        console.log(this.props);
+
+        console.log('onSearchChange:')
+        console.log(onSearchChange)
+
+        console.log('searchField');
+        console.log(searchField);
+
+        // const filteredRobots = a.filter(robot => {
+        //     return robot.name.toLowerCase().includes(searchField.toLowerCase())
+        // })
+
+        const ans = a.filter(l => {
+            return l.name.toLowerCase().match(searchField.toLowerCase());
         });
 
         // const filetred = a.filter(function (i, n) {
@@ -35,16 +86,12 @@ class App extends Component {
         //
         console.log(ans)
 
-        this.setState({robots: ans})
 
-    }
-
-    render() {
         return (
             <div className={'tc'}>
                 <h1>Robofriends</h1>
-                <SearchBox searchChange={this.onSearchChange}/>
-                <CardList robots={this.state.robots}/>
+                <SearchBox searchChange={onSearchChange}/>
+                <CardList robots={ans}/>
 
             </div>
 
@@ -52,4 +99,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
