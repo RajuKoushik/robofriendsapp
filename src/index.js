@@ -11,11 +11,19 @@ import App from './App.js'
 import {robots} from './robots'
 import CardList from "./CardList";
 
-import {searchRobots} from './reducer'
-import {createStore} from "redux";
+import {searchRobots, requestRobots} from './reducer'
+import {createStore, applyMiddleware, combineReducers} from "redux";
 
+import {createLogger} from "redux-logger";
 
-const store = createStore(searchRobots)
+import thunkMiddleware from 'redux-thunk'
+
+const logger = createLogger();
+
+const rootReducer = combineReducers({searchRobots, requestRobots})
+
+const store = createStore(rootReducer, applyMiddleware(thunkMiddleware, logger))
+
 
 ReactDOM.render(<Provider store={store}><App/></Provider>, document.getElementById('root'));
 

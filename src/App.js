@@ -6,7 +6,7 @@ import CardList from "./CardList";
 
 import SearchBox from './SearchBox'
 
-import {setSearchField} from "./actions";
+import {setSearchField, requestRobots} from "./actions";
 
 import {connect} from 'react-redux';
 
@@ -14,7 +14,10 @@ const mapStateToProps = state => {
     console.log('mapStateToProps')
 
     return {
-        searchField: state.searchField
+        searchField: state.searchRobots.searchField,
+        robots: state.requestRobots.robots,
+        isPending: state.requestRobots.isPending,
+        error: state.requestRobots.error
     }
 
 }
@@ -26,42 +29,29 @@ const mapDispatchToProps = (dispatch) => {
     return {
 
 
-        onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+        onSearchChange: (event) => dispatch(setSearchField(event.target.value)),
+        onRequestRobots: () => dispatch(requestRobots())
     }
 }
 
 
 class App extends Component {
 
-    constructor() {
-        super()
-        this.state = {
-            robots: [],
-
-        }
-    }
 
     componentDidMount() {
-        fetch('https://jsonplaceholder.typicode.com/users').then(response => response.json()).then(users => {
-            this.setState({robots: users})
-        });
+        this.props.onRequestRobots();
     }
-
-
 
 
     render() {
 
 
-        const a = this.state.robots;
-
         console.log(this.state);
 
         console.log("bla");
-        console.log(a);
 
 
-        const {searchField, onSearchChange} = this.props;
+        const {searchField, onSearchChange, robots, isPending} = this.props;
 
         console.log('props down baby')
         console.log(this.props);
@@ -72,26 +62,26 @@ class App extends Component {
         console.log('searchField');
         console.log(searchField);
 
-        // const filteredRobots = a.filter(robot => {
-        //     return robot.name.toLowerCase().includes(searchField.toLowerCase())
-        // })
+        const filteredRobots = robots.filter(robot => {
+            return robot.name.toLowerCase().includes(searchField.toLowerCase())
+        })
 
-        const ans = a.filter(l => {
-            return l.name.toLowerCase().match(searchField.toLowerCase());
-        });
+        // const ans = a.filter(l => {
+        //     return l.name.toLowerCase().match(searchField.toLowerCase());
+        // });
 
         // const filetred = a.filter(function (i, n) {
         //     return n.name === event.target.value;
         // });
         //
-        console.log(ans)
+        console.log(filteredRobots)
 
 
         return (
             <div className={'tc'}>
                 <h1>Robofriends</h1>
                 <SearchBox searchChange={onSearchChange}/>
-                <CardList robots={ans}/>
+                <CardList robots={filteredRobots}/>
 
             </div>
 
